@@ -6,7 +6,9 @@
       </v-card-title>
 
       <v-card-text>
-        <v-container><DynamicForm /></v-container>
+        <v-container
+          ><DynamicForm ref="dynamicFormData" :formStructure="formStructure" :formVals="formVals"
+        /></v-container>
       </v-card-text>
 
       <v-card-actions>
@@ -30,6 +32,10 @@ export default Vue.extend({
       type: Array,
       required: true,
     },
+    formVals: {
+      type: Object,
+      required: false,
+    },
     isVisible: {
       type: Boolean,
       required: true,
@@ -42,7 +48,25 @@ export default Vue.extend({
   data() {
     return {};
   },
-  methods: {},
+  // @to-do remove mounted won't really need it
+  mounted() {
+    // console.log('this.formStrucuture', this.formStructure);
+  },
+  methods: {
+    save() {
+      console.log('user wants to save or add company');
+      //figure out isAddCompany -> check formVals prop
+      const isAddCompany = !this.formVals;
+      const dynamicFormData = this.$refs.dynamicFormData as any;
+      console.log('data to add/update', dynamicFormData.form);
+      // @to-do run corresponding actions to update vuex state
+      isAddCompany
+        ? console.log('want to add new Company')
+        : console.log('want to update existing company');
+      // close dialogue
+      this.$emit('close');
+    },
+  },
 });
 </script>
 
