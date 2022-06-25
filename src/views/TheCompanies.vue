@@ -25,7 +25,7 @@
         v-if="formStructure"
         title="Edit Company"
         :isVisible="isEditCompanyDialogVisible"
-        :formStructure="companyForm"
+        :formStructure="formStructure"
         :formVals="companySelected"
         @close="isEditCompanyDialogVisible = false"
       />
@@ -48,6 +48,7 @@ import FormDialog from '@/components/Dialogs/FormDialog.vue';
 import DeleteDialog from '@/components/Dialogs/DeleteDialog.vue';
 import { mapGetters } from 'vuex';
 import { Company, CompanyForm } from '@/store/companies-types';
+import { FormElements } from '@/store/form-types';
 
 export default Vue.extend({
   name: 'TheCompanies',
@@ -72,27 +73,30 @@ export default Vue.extend({
   methods: {
     setDeleteCompany(company: Company) {
       console.log('user has selected company to delete', company.companyId);
-      // set delete dialoge visibility to true
       this.isDeleteDialogVisible = true;
-      // set prop to keep track of company to be deleted
       this.companySelected = company;
     },
     setEditCompany(company: Company) {
       console.log('user has selected company to edit', company);
-      // set edit company dialoge to visible
       this.isEditCompanyDialogVisible = true;
-      // set props of company values to be edited
-      // set formStrucutre to be based on selected company !careful balance key & label need to be updated
       this.companySelected = company;
+      // @to-do set formStrucutre to be based on selected company
+      // !careful balance key & label need to be updated
+      this.formStructure = this.companyForm.map((field: FormElements) => {
+        const newField = { ...field };
+        if (newField.type === 'selectField') {
+          const currBalanceKey = Object.keys(this.companySelected)[0];
+          newField.key = currBalanceKey;
+          newField.label = newField.label.replace(/\d{4}$/, currBalanceKey);
+        }
+        return newField;
+      });
     },
     deleteCompany() {
-      // run action to delete company
-      // get val from TheCompanies state
+      //@to-do: run action to delete company
       console.log('user wants to delete company', this.companySelected.companyId);
-      // clear state afterwards ?
       this.companySelected = {} as Company;
       this.isDeleteDialogVisible = false;
-      console.log('this.companySelected', this.companySelected);
     },
   },
 });
