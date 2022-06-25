@@ -13,7 +13,7 @@ But we are nevertheless interested in what the implementation would look like.
 
 Since we have different customer requirements, the data a company consists of requires a dynamic form. This structure comes from the backend, and its elements are rendered dynamically. Have a look inside the store to see the type definitions. You can also find the companies store module there. It holds all the related companies' data inside the state that the backend created for you.
 
-✅ A coworker already started with the challenge but didn't finish it; please complete it for him and create a Pull Request.
+✅ A coworker already started with the challenge but didn't finish it; please complete it for them and create a Pull Request.
 
 ℹ️ While you work on the implementation, the backend team would need to implement the real API endpoints based on what you suggest to them.
 
