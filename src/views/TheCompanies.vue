@@ -20,7 +20,6 @@
         :formStructure="companyForm"
         @close="isAddCompanyDialogVisible = false"
       />
-      <!-- @to-do for edit dialoge formStructure needs to be set in edit method -->
       <FormDialog
         v-if="formStructure"
         title="Edit Company"

@@ -10,11 +10,13 @@
         :name="field.key"
         :label="field.label"
         :items="field.type === 'selectField' && field.items"
+        :error-messages="`${field.required ? setValidation(field) : ''}`"
+        @blur="field.required && $v.form[field.key].$touch()"
       >
         <template v-if="field.type === 'radioGroup'">
           <component
             v-for="(radio, i) in field.items"
-            :is="`v-radio`"
+            :is="'v-radio'"
             :key="i"
             :value="radio.value"
             :label="radio.text"
@@ -28,6 +30,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import { required } from 'vuelidate/lib/validators';
 import { Company, CompanyForm } from '@/store/companies-types';
 import { kebabCase } from 'lodash';
 import { VRadioGroup, VRadio, VTextField, VSelect } from 'vuetify/lib';
@@ -50,6 +53,9 @@ export default Vue.extend({
     formVals() {
       this.form = { ...this.formVals };
     },
+    isFormValid() {
+      this.$emit('isValid', this.isFormValid);
+    },
   },
   data() {
     return {
@@ -57,15 +63,26 @@ export default Vue.extend({
       form: {} as Company,
     };
   },
+  validations: {
+    form: {
+      companyName: {
+        required,
+      },
+    },
+  },
   mounted() {
-    // @remove logs
-    // console.log('--- dynamic form mounted');
-    // console.log('this.formStructure', this.formStructure);
-    // console.log('this.formVals:', this.formVals);
-    this.form = { ...this.formVals };
+    if (this.formVals) this.form = { ...this.formVals };
   },
   methods: {
     kebabCase,
+    setValidation({ required }: FormElements) {
+      if (!required) return;
+      const errors = [];
+      if (this.$v.form?.companyName?.$error) {
+        errors.push('Company name is required.');
+      }
+      return errors;
+    },
     setVField({ type }: FormElements) {
       return type != 'selectField' ? kebabCase(type) : type.replace('Field', '');
     },
