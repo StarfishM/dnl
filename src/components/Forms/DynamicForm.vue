@@ -58,6 +58,7 @@ export default Vue.extend({
     };
   },
   mounted() {
+    // @remove logs
     // console.log('--- dynamic form mounted');
     // console.log('this.formStructure', this.formStructure);
     // console.log('this.formVals:', this.formVals);

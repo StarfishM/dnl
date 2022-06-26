@@ -1,0 +1,5 @@
+export enum CompanyMutationTypes {
+  ADD_COMPANY = 'ADD_COMPANY',
+  CHANGE_COMPANY = 'CHANGE_COMPANY',
+  REMOVE_COMPANY = 'REMOVE_COMPANY',
+}

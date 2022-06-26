@@ -14,7 +14,7 @@
         @deleteItem="setDeleteCompany"
       />
       <FormDialog
-        v-if="formStructure"
+        v-if="isAddCompanyDialogVisible"
         title="Add Company"
         :isVisible="isAddCompanyDialogVisible"
         :formStructure="companyForm"
@@ -46,7 +46,7 @@ import DataTableCompanies from '@/components/Tables/DataTableCompanies.vue';
 import BtnMain from '@/components/UI/BtnMain.vue';
 import FormDialog from '@/components/Dialogs/FormDialog.vue';
 import DeleteDialog from '@/components/Dialogs/DeleteDialog.vue';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { Company, CompanyForm } from '@/store/companies-types';
 import { FormElements } from '@/store/form-types';
 
@@ -67,21 +67,15 @@ export default Vue.extend({
       companyForm: 'companies/companyForm',
     }),
   },
-  mounted() {
-    console.log('this.companyForm', this.companyForm);
-  },
   methods: {
+    ...mapActions('companies', ['DELETE_COMPANY']),
     setDeleteCompany(company: Company) {
-      console.log('user has selected company to delete', company.companyId);
       this.isDeleteDialogVisible = true;
       this.companySelected = company;
     },
     setEditCompany(company: Company) {
-      console.log('user has selected company to edit', company);
       this.isEditCompanyDialogVisible = true;
       this.companySelected = company;
-      // @to-do set formStrucutre to be based on selected company
-      // !careful balance key & label need to be updated
       this.formStructure = this.companyForm.map((field: FormElements) => {
         const newField = { ...field };
         if (newField.type === 'selectField') {
@@ -93,8 +87,7 @@ export default Vue.extend({
       });
     },
     deleteCompany() {
-      //@to-do: run action to delete company
-      console.log('user wants to delete company', this.companySelected.companyId);
+      this['DELETE_COMPANY'](this.companySelected.companyId);
       this.companySelected = {} as Company;
       this.isDeleteDialogVisible = false;
     },
