@@ -60,6 +60,7 @@ export default Vue.extend({
     save() {
       const isAddCompany = !this.formVals;
       const dynamicFormData = this.$refs.dynamicFormData as any;
+      if (!dynamicFormData.form.companyName) return this.$emit('close');
       isAddCompany
         ? this.CREATE_COMPANY(dynamicFormData.form)
         : this.UPDATE_COMPANY(dynamicFormData.form);
