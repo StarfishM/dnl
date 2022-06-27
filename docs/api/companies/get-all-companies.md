@@ -50,6 +50,6 @@
     },
   ],
 	status: 200,
-	errors:[]
+	error:[]
 }
 ```

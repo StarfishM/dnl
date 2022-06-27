@@ -53,7 +53,7 @@
       2019: '',
     },
 	status: 200,
-	errors:[]
+	error:[]
 }
 
 // ex 2
@@ -68,6 +68,6 @@
       2019: 'good',
     },
 	status: 200,
-	errors:[]
+	error:[]
 }
 ```
