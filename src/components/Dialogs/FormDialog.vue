@@ -6,13 +6,19 @@
       </v-card-title>
 
       <v-card-text>
-        <v-container><DynamicForm /></v-container>
+        <v-container
+          ><DynamicForm
+            ref="dynamicFormData"
+            :formStructure="formStructure"
+            :formVals="formVals"
+            @isValid="toggleSaveBtn"
+        /></v-container>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="$emit('close')"> Cancel </v-btn>
-        <v-btn color="blue darken-1" text @click="save()"> Save </v-btn>
+        <v-btn color="blue darken-1" text @click="save()" :disabled="isSaveDisabled"> Save </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -21,6 +27,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import DynamicForm from '@/components/Forms/DynamicForm.vue';
+import { mapActions } from 'vuex';
 
 export default Vue.extend({
   name: 'FormDialog',
@@ -29,6 +36,10 @@ export default Vue.extend({
     formStructure: {
       type: Array,
       required: true,
+    },
+    formVals: {
+      type: Object,
+      required: false,
     },
     isVisible: {
       type: Boolean,
@@ -40,9 +51,25 @@ export default Vue.extend({
     },
   },
   data() {
-    return {};
+    return {
+      isSaveDisabled: false,
+    };
   },
-  methods: {},
+  methods: {
+    ...mapActions('companies', ['CREATE_COMPANY', 'UPDATE_COMPANY']),
+    save() {
+      const isAddCompany = !this.formVals;
+      const dynamicFormData = this.$refs.dynamicFormData as any;
+      if (!dynamicFormData.form.companyName) return this.$emit('close');
+      isAddCompany
+        ? this.CREATE_COMPANY(dynamicFormData.form)
+        : this.UPDATE_COMPANY(dynamicFormData.form);
+      this.$emit('close');
+    },
+    toggleSaveBtn(isFormValid: boolean) {
+      this.isSaveDisabled = !isFormValid;
+    },
+  },
 });
 </script>
 

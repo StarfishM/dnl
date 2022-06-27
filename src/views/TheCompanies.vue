@@ -10,22 +10,29 @@
         v-if="tableHeaders && tableItems"
         :tableHeaders="tableHeaders"
         :tableItems="tableItems"
+        @editItem="setEditCompany"
+        @deleteItem="setDeleteCompany"
       />
       <FormDialog
-        v-if="formStructure"
+        v-if="isAddCompanyDialogVisible"
         title="Add Company"
         :isVisible="isAddCompanyDialogVisible"
-        :formStructure="formStructure"
-        @close="closeAddCompanyDialogVisible()"
+        :formStructure="companyForm"
+        @close="isAddCompanyDialogVisible = false"
       />
       <FormDialog
         v-if="formStructure"
         title="Edit Company"
         :isVisible="isEditCompanyDialogVisible"
         :formStructure="formStructure"
+        :formVals="companySelected"
         @close="isEditCompanyDialogVisible = false"
       />
-      <DeleteDialog :isVisible="isDeleteDialogVisible" @close="isDeleteDialogVisible = false" />
+      <DeleteDialog
+        :isVisible="isDeleteDialogVisible"
+        @close="isDeleteDialogVisible = false"
+        @delete="deleteCompany"
+      />
     </MainContainer>
   </div>
 </template>
@@ -38,7 +45,9 @@ import DataTableCompanies from '@/components/Tables/DataTableCompanies.vue';
 import BtnMain from '@/components/UI/BtnMain.vue';
 import FormDialog from '@/components/Dialogs/FormDialog.vue';
 import DeleteDialog from '@/components/Dialogs/DeleteDialog.vue';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+import { Company, CompanyForm } from '@/store/companies-types';
+import { FormElements } from '@/store/form-types';
 
 export default Vue.extend({
   name: 'TheCompanies',
@@ -47,17 +56,39 @@ export default Vue.extend({
     isEditCompanyDialogVisible: false,
     isAddCompanyDialogVisible: false,
     isDeleteDialogVisible: false,
-    formStructure: [],
+    formStructure: [] as CompanyForm,
+    companySelected: {} as Company,
   }),
   computed: {
     ...mapGetters({
       tableItems: 'companies/companies',
       tableHeaders: 'companies/companyTableHeaders',
+      companyForm: 'companies/companyForm',
     }),
   },
   methods: {
-    closeAddCompanyDialogVisible() {
-      this.isAddCompanyDialogVisible = false;
+    ...mapActions('companies', ['DELETE_COMPANY']),
+    setDeleteCompany(company: Company) {
+      this.isDeleteDialogVisible = true;
+      this.companySelected = company;
+    },
+    setEditCompany(company: Company) {
+      this.isEditCompanyDialogVisible = true;
+      this.companySelected = company;
+      this.formStructure = this.companyForm.map((field: FormElements) => {
+        const newField = { ...field };
+        if (newField.type === 'selectField') {
+          const currBalanceKey = Object.keys(this.companySelected)[0];
+          newField.key = currBalanceKey;
+          newField.label = newField.label.replace(/\d{4}$/, currBalanceKey);
+        }
+        return newField;
+      });
+    },
+    deleteCompany() {
+      this['DELETE_COMPANY'](this.companySelected.companyId);
+      this.companySelected = {} as Company;
+      this.isDeleteDialogVisible = false;
     },
   },
 });
